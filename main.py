@@ -1,3 +1,4 @@
+import datetime
 import wx
 import time
 
@@ -79,6 +80,7 @@ class MyFrame1 ( wx.Frame ):
 	def __del__( self ):
 		pass
 
+	# Реализация нажатия на кнопку
 	def on_button1(self, event):
 		btn_label = self.m_button1.GetLabel()
 		if btn_label == "Старт":
@@ -101,11 +103,15 @@ class MyFrame1 ( wx.Frame ):
 
 	# обновляем название по таймеру и выводим время на экран
 	def update(self, event):
-		btn_label = self.m_button1.GetLabel()
 		sec1 = self.sw1.Time() / 1000
 		sec2 = self.sw2.Time() / 1000
 		self.m_staticText1.SetLabel(time.strftime("%H:%M:%S", time.gmtime(sec1)))
 		self.m_staticText2.SetLabel(time.strftime("%H:%M:%S", time.gmtime(sec2)))
+
+		# Вывод текущего времени в статусбар (будет отображаться после запуска времени)
+		dt = datetime.datetime.now()
+		dt_str = dt.strftime("%d/%m/%Y  %H:%M")
+		self.m_statusBar1.SetStatusText(f"{dt_str}")
 
 
 if __name__ == "__main__":
