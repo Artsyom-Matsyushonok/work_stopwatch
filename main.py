@@ -43,7 +43,6 @@ class MyFrame1 ( wx.Frame ):
 
 		bSizer1.Add( gbSizer1, 1, wx.SHAPED, 5 )
 
-
 		self.SetSizer( bSizer1 )
 		self.Layout()
 		self.m_statusBar1 = self.CreateStatusBar( 1, wx.STB_SIZEGRIP, wx.ID_ANY )
@@ -77,6 +76,8 @@ class MyFrame1 ( wx.Frame ):
 		self.sw1 = wx.StopWatch()
 		self.sw2 = wx.StopWatch()
 
+		self.Bind(wx.EVT_CLOSE, self.on_quit)
+
 	def __del__( self ):
 		pass
 
@@ -99,7 +100,8 @@ class MyFrame1 ( wx.Frame ):
 			self.m_button1.SetLabel("Отдыхать")
 
 	def on_quit(self, event):
-		self.Close()
+		self.save_result()
+		self.Destroy()
 
 	# обновляем название по таймеру и выводим время на экран
 	def update(self, event):
@@ -111,7 +113,29 @@ class MyFrame1 ( wx.Frame ):
 		# Вывод текущего времени в статусбар (будет отображаться после запуска времени)
 		dt = datetime.datetime.now()
 		dt_str = dt.strftime("%d/%m/%Y  %H:%M")
-		self.m_statusBar1.SetStatusText(f"{dt_str}")
+		self.m_statusBar1.SetStatusText(dt_str)
+
+	def save_result(self):
+		date = datetime.date.today()
+		date_str = date.strftime('%d/%m/%Y')
+		with open("saves.txt", "r") as f:
+			last_string = f.readlines()[-1].split(sep=", ")
+		if last_string[0] == date_str:
+			sum_msec = int(last_string[1]) + self.sw1.Time()
+			last_string.pop(1)
+			last_string.insert(1, str(sum_msec))
+
+			with open("saves.txt", "r") as f:
+				old_data = f.read()
+
+			with open("saves.txt", "r") as f:
+				new_data = old_data.replace(f"{f.readlines()[-1]}", f"{', '.join(last_string)}")
+
+			with open("saves.txt", "w") as f:
+				f.write(new_data)
+		else:
+			with open("saves.txt", "a") as f:
+				f.write(f"{date_str}, {self.sw1.Time()}, \n")
 
 
 if __name__ == "__main__":
